@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"at"
-	"at/sms"
+	"github.com/lx32056127/at/sms"
 )
 
 const (

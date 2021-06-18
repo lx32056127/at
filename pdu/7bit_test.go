@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"at/util"
+	"github.com/lx32056127/at/util"
 )
 
 func TestEncode7Bit(t *testing.T) {

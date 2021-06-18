@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"at/pdu"
-	"at/sms"
-	"at/util"
+	"github.com/lx32056127/at/pdu"
+	"github.com/lx32056127/at/sms"
+	"github.com/lx32056127/at/util"
 )
 
 // DeviceProfile hides the device-specific implementation

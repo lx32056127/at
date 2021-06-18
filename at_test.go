@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"at/pdu"
+	"github.com/lx32056127/at/pdu"
 )
 
 // Needs to be changed for each particular configuration.

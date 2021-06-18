@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/tarm/goserial"
-	"at/pdu"
-	"at/sms"
+	"github.com/lx32056127/at/pdu"
+	"github.com/lx32056127/at/sms"
 )
 
 // BaudRate defines the default speed of serial connection.

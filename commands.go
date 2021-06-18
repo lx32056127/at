@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/xlab/at/pdu"
-	"github.com/xlab/at/sms"
-	"github.com/xlab/at/util"
+	"at/pdu"
+	"at/sms"
+	"at/util"
 )
 
 // DeviceProfile hides the device-specific implementation

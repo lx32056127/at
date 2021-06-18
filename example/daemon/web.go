@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/xlab/at"
-	"github.com/xlab/at/sms"
+	"at"
+	"at/sms"
 )
 
 func (m *Monitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {

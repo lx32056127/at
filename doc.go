@@ -14,5 +14,5 @@
 //
 // About
 //
-// Project page: https://github.com/xlab/at
+// Project page: https://at
 package at

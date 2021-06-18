@@ -9,15 +9,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xlab/at/pdu"
+	"at/pdu"
 )
 
 // Common errors.
 var (
-	ErrUnknownEncoding    = errors.New("sms: unsupported encoding")
-	ErrUnknownMessageType = errors.New("sms: unsupported message type")
-	ErrIncorrectSize      = errors.New("sms: decoded incorrect size of field")
-	ErrNonRelative        = errors.New("sms: non-relative validity period support is not implemented yet")
+	ErrUnknownEncoding               = errors.New("sms: unsupported encoding")
+	ErrUnknownMessageType            = errors.New("sms: unsupported message type")
+	ErrIncorrectSize                 = errors.New("sms: decoded incorrect size of field")
+	ErrNonRelative                   = errors.New("sms: non-relative validity period support is not implemented yet")
+	ErrIncorrectUserDataHeaderLength = errors.New("sms: incorrect user data header length ")
 )
 
 // MessageType represents the message's type.
@@ -250,6 +251,7 @@ type Message struct {
 	ServiceCenterAddress PhoneNumber
 	Address              PhoneNumber
 	Text                 string
+	UserDataHeader       UserDataHeader
 
 	// Advanced
 	MessageReference         byte
@@ -419,6 +421,12 @@ func (s *Message) ReadFrom(octets []byte) (n int, err error) {
 		s.LoopPrevention = sms.LoopPrevention
 		s.ReplyPathExists = sms.ReplyPath
 		s.UserDataStartsWithHeader = sms.UserDataHeaderIndicator
+		if sms.UserDataHeaderIndicator {
+			err = s.UserDataHeader.ReadForm(sms.UserData)
+			if err != nil {
+				return
+			}
+		}
 		s.StatusReportIndication = sms.StatusReportIndication
 		s.Address.ReadFrom(sms.OriginatingAddress[1:])
 		s.Encoding = Encoding(sms.DataCodingScheme)
@@ -532,16 +540,16 @@ func (s *smsDeliver) Bytes() []byte {
 }
 
 // GSM 03.**
-//The TP-User-Data-Header-Indicator is a 1 bit field within bit 6 of the first octet of an SMS-SUBMIT and
-//SMS-DELIVER PDU and has the following values.
-//Bit no. 6 0 The TP-UD field contains only the short message
-//1 The beginning of the TP-UD field contains a Header in addition to the
-//short message
+// The TP-User-Data-Header-Indicator is a 1 bit field within bit 6 of the first octet of an SMS-SUBMIT and
+// SMS-DELIVER PDU and has the following values.
+// Bit no. 6 0 The TP-UD field contains only the short message
+// 1 The beginning of the TP-UD field contains a Header in addition to the
+// short message
 
-//The TP-Reply-Path is a 1-bit field, located within bit no 7 of the first octet of both SMS-DELIVER and
-//SMS-SUBMIT, and to be given the following values:
-//Bit no 7: 0 TP-Reply-Path parameter is not set in this SMS-SUBMIT/DELIVER
-//1 TP-Reply-Path parameter is set in this SMS-SUBMIT/DELIVER
+// The TP-Reply-Path is a 1-bit field, located within bit no 7 of the first octet of both SMS-DELIVER and
+// SMS-SUBMIT, and to be given the following values:
+// Bit no 7: 0 TP-Reply-Path parameter is not set in this SMS-SUBMIT/DELIVER
+// 1 TP-Reply-Path parameter is set in this SMS-SUBMIT/DELIVER
 
 // TP-OA TP-Originating-Address  2-12 octets
 // Each address field of the SM-TL consists of the following sub-fields: An Address-Length field of one octet,
@@ -738,4 +746,26 @@ func cutStr(str string, n int) string {
 		return string(runes[0:n])
 	}
 	return str
+}
+
+type UserDataHeader struct {
+	TotalNumber int
+	Sequence    int
+	Tag         int
+}
+
+func (udh *UserDataHeader) ReadForm(octets []byte) error {
+	octetsLng := len(octets)
+	headerLng := int(octets[0]) + 1
+	if (octetsLng-headerLng) <= 0 || headerLng <= 5 {
+		return ErrIncorrectUserDataHeaderLength
+	}
+
+	h := octets[:headerLng]
+
+	udh.Sequence = int(h[5])
+	udh.TotalNumber = int(h[4])
+	udh.Tag = int(h[3])
+
+	return nil
 }

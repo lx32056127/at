@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/xlab/at/util"
+	"at/util"
 )
 
 var (

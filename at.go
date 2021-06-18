@@ -18,10 +18,10 @@ const BaudRate = 115200
 // Timeout to close the connection in case of modem is being not responsive at all.
 const Timeout = time.Minute
 
-// <CR><LF> sequence.
+// Sep <CR><LF> sequence.
 const Sep = "\r\n"
 
-// Ctrl+Z code.
+// Sub Ctrl+Z code.
 const Sub = string(0x1A)
 
 // Common errors.
